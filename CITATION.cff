@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Quantum Local Packing: K5 Minus Edge in R^3"
+authors:
+  - family-names: Santos
+    given-names: Euzebio
+    alias: ebiossanto
+year: 2026
+license: MIT
+repository-code: "https://github.com/ebiossanto/IA-Research-Quantum-Local-Packing"
+abstract: >-
+  Exact solution for the quantum local packing problem on K5 minus
+  edge in R^3. Proves c_opt(q) = c_*(q) where c_* is the physical
+  root of P(c,q) = 9c^3 - (q+2)c^2 - (2q+3)c - q = 0, using
+  algebraic identities, resultant method, and Gram matrix rank analysis.
+keywords:
+  - quantum packing
+  - local packing problem
+  - Gram matrix
+  - SDP relaxation
+  - resultant
+  - Lovász theta
+  - K5 graph
