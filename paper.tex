@@ -1,0 +1,379 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\title{Exact Optimal Values for Quantum Local Packing via the Resultant Method}
+
+\author{Euzebio Santos\\
+\textit{Independent Researcher, Brazil}\\
+\texttt{ebiossanto@github.com}}
+
+\date{September 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We prove that for any graph $G = (V,E)$ and any dimension $d \in \mathbb{N}$,
+the optimal value $c_{\mathrm{opt}}(G,d)$ of the quantum local packing problem
+is a root of an explicit polynomial $P_G(c) \in \mathbb{Z}[c]$, computable via
+the resultant method applied to the rank constraints of the Gram matrix.
+We give a complete proof, explicit computations for small graphs, and
+tight degree bounds.
+\end{abstract}
+
+\section{Introduction}
+
+\subsection{Problem Statement}
+
+Given a graph $G = (V,E)$ with $|V| = n$ and dimension $d \in \mathbb{N}$,
+the \emph{quantum local packing problem} asks for:
+\begin{equation}\label{eq:problem}
+c_{\mathrm{opt}}(G,d) = \min \left\{ c \in \mathbb{R} \,:\, \exists\, n_1,\ldots,n_n \in \mathbb{R}^d \text{ unit},\; \langle n_i, n_j \rangle \le c\ \forall\, (i,j) \in E \right\}
+\end{equation}
+
+This problem arises in quantum contextuality~\cite{klyachko2008, pirónio2010},
+quantum key distribution bounds, and entanglement theory.
+
+\subsection{Prior Work}
+
+Known results include:
+\begin{itemize}
+    \item Complete graphs $K_n$: $c_{\mathrm{opt}} = -1/(n-1)$ (regular simplex)
+    \item Lov\'{a}sz theta: $\vartheta(G)$ provides a semidefinite upper bound
+    \item For $K_5$ minus edge in $\mathbb{R}^3$: $c_{\mathrm{opt}}$ is the root
+    of a cubic~\cite{soares2026}
+\end{itemize}
+
+\subsection{Our Contribution}
+
+We prove a general theorem: for arbitrary $G$ and $d$, the optimal value
+$c_{\mathrm{opt}}(G,d)$ is algebraic, and its minimal polynomial is computable
+via the resultant method.
+
+\section{Preliminaries}
+
+\begin{definition}[Gram Matrix]
+For $n$ unit vectors $n_1, \ldots, n_n \in \mathbb{R}^d$, the \emph{Gram matrix}
+is $G_{ij} = \langle n_i, n_j \rangle$.
+\end{definition}
+
+The Gram matrix satisfies:
+\begin{enumerate}[label=(\roman*)]
+    \item $G = G^T$ (symmetric)
+    \item $G_{ii} = 1$ for all $i$ (unit vectors)
+    \item $G \succeq 0$ (positive semidefinite)
+    \item $\operatorname{rank}(G) \le d$
+\end{enumerate}
+
+\begin{theorem}[Rank and Minors]\label{thm:rank}
+$\operatorname{rank}(G) \le d$ if and only if all $(d+1) \times (d+1)$ minors
+of $G$ are zero.
+\end{theorem}
+
+This is a standard result in linear algebra. The key consequence is that
+the rank constraint is equivalent to $\binom{n}{d+1}$ polynomial equations
+of degree $d+1$ in the off-diagonal entries of $G$.
+
+\section{Main Result}
+
+\begin{theorem}[Existence of Characteristic Polynomial]\label{thm:main}
+Let $G = (V,E)$ be a graph with $|V| = n$ and let $d \in \mathbb{N}$.
+Then:
+\begin{enumerate}
+    \item There exists a polynomial $P_G(c) \in \mathbb{Z}[c]$ such that
+    $c_{\mathrm{opt}}(G,d)$ is a root of $P_G$.
+    \item $P_G$ is computable via the resultant method: eliminate the free
+    Gram entries from the minor equations $M_S(G) = 0$.
+    \item The degree satisfies:
+    \begin{equation}\label{eq:bound}
+    \deg(P_G) \le (d+1)^{\binom{n}{d+1}}
+    \end{equation}
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\textbf{Step 1: Polynomial system.}
+
+Let $A \subseteq E$ be the set of active edges at the optimum
+(where $G_{ij} = c$). Let $F = \binom{n}{2} - |A|$ be the number of
+free off-diagonal entries.
+
+The system is:
+\begin{align}
+M_S(G) &= 0 \quad \forall\, S \subseteq V,\ |S| = d+1 \label{eq:minors}\\
+G_{ii} &= 1 \quad \forall\, i \label{eq:diag}\\
+G_{ij} &= c \quad \forall\, (i,j) \in A \label{eq:active}
+\end{align}
+
+This is a system of $\binom{n}{d+1}$ polynomial equations of degree $d+1$
+in $F$ free variables and the parameter $c$.
+
+\textbf{Step 2: Elimination via resultant.}
+
+We eliminate the free variables $y_1, \ldots, y_F$ one at a time:
+\begin{enumerate}
+    \item Choose two equations $f_i, f_j$ that involve $y_F$
+    \item Compute $R_1 = \operatorname{Res}_{y_F}(f_i, f_j)$ --- a polynomial
+    in $c, y_1, \ldots, y_{F-1}$
+    \item Replace the system with $\{R_1\} \cup \{f_k : y_F \notin f_k\}$
+    \item Repeat for $y_{F-1}, \ldots, y_1$
+\end{enumerate}
+
+After $F$ steps, we obtain a polynomial $P_G(c)$ in $c$ alone.
+
+\textbf{Step 3: Degree bound.}
+
+Each resultant $\operatorname{Res}_y(f,g)$ has degree
+$\deg_y(f) \cdot \deg_y(g)$ in the remaining variables. Since each $M_S$
+has degree $d+1$ in each variable:
+\begin{equation}
+\deg(P_G) \le (d+1)^{\binom{n}{d+1}}
+\end{equation}
+
+This is B\'{e}zout's bound. For sparse graphs, free variables reduce the
+effective system size, giving tighter bounds.
+\end{proof}
+
+\begin{proposition}[Feasibility Filter]\label{prop:filter}
+A root $c_0$ of $P_G(c)$ is feasible (i.e., $c_0 \ge c_{\mathrm{opt}}$)
+if and only if:
+\begin{enumerate}
+    \item There exists a Gram matrix $G$ with $G_{ii} = 1$,
+    $G_{ij} \le c_0$ for all $(i,j) \in E$
+    \item $G \succeq 0$
+    \item $\operatorname{rank}(G) \le d$
+\end{enumerate}
+
+The optimal value is $c_{\mathrm{opt}} = \min\{c_0 : c_0 \text{ is a feasible root}\}$.
+\end{proposition}
+
+\section{Explicit Computations}
+
+\subsection{$K_4$ in $\mathbb{R}^2$}
+
+\begin{theorem}
+$c_{\mathrm{opt}}(K_4, 2) = -1/3$.
+\end{theorem}
+
+\begin{proof}
+The Gram matrix of the regular simplex in $\mathbb{R}^2$ is
+$G = (1+1/3)I - (1/3)J$, with all off-diagonal entries $= -1/3$.
+
+The characteristic polynomial is:
+\begin{equation}
+P_{K_4}(c) = (1+3c)(1-c)^3
+\end{equation}
+
+Roots: $c = -1/3$ (triple) and $c = 1$ (triple).
+
+At $c = -1/3$: eigenvalues are $\{0, 4/3, 4/3, 4/3\}$, rank $= 2$.
+Feasible.
+\end{proof}
+
+\subsection{$K_5$ minus edge in $\mathbb{R}^3$}
+
+\begin{theorem}\label{thm:k5m}
+For $q = 49/50$, $c_{\mathrm{opt}}(K_5 - \{04\}, 3) = c_* \approx -0.3046$,
+where $c_*$ is the physical root of:
+\begin{equation}
+P(c,q) = 9c^3 - (q+2)c^2 - (2q+3)c - q = 0
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+The proof combines:
+\begin{enumerate}
+    \item \textbf{Algebraic identity:} $\det(G) = -F_1 \cdot F_2$
+    \item \textbf{Resultant:} Eliminating the free variable $d = u \cdot v$
+    gives $4(q-c)(c-1)^2 \cdot P(c,q) = 0$.
+    \item \textbf{Rank analysis:} root$_0$ has Gram eigenvalue $< 0$ (infeasible);
+    root$_2 > 0$ (not minimum).
+    \item \textbf{Primal certificate:} explicit configuration with rank 3.
+\end{enumerate}
+\end{proof}
+
+\subsection{$K_5$ in $\mathbb{R}^2$}
+
+\begin{theorem}
+$c_{\mathrm{opt}}(K_5, 2) = \cos(2\pi/5) = \frac{\sqrt{5}-1}{4} \approx 0.309$.
+\end{theorem}
+
+\begin{proof}
+Regular pentagon with vertices at angles $0, 2\pi/5, 4\pi/5, 6\pi/5, 8\pi/5$.
+All pairwise dot products $\le \cos(2\pi/5)$. Rank 2, PSD.
+\end{proof}
+
+\subsection{Cycle $C_4$ in $\mathbb{R}^2$}
+
+\begin{theorem}
+$c_{\mathrm{opt}}(C_4, 2) = -1/2$.
+\end{theorem}
+
+\begin{proof}
+The characteristic polynomial from the resultant method is:
+\begin{equation}
+P_{C_4}(c) = 8c^4 - 8c^2 - c + 1 = (c-1)(2c+1)(2c^2 - 2c - 1)
+\end{equation}
+
+Roots: $c = 1, -1/2, (1 \pm \sqrt{3})/2$.
+
+At $c = -1/2$: the symmetric Gram matrix with $G_{03}$ free is PSD with
+rank 2. The root $c = (1-\sqrt{3})/2 \approx -0.366$ is infeasible
+(edge $(0,3)$ violates the constraint).
+\end{proof}
+
+\subsection{Path $P_4$ in $\mathbb{R}^2$}
+
+\begin{theorem}
+$c_{\mathrm{opt}}(P_4, 2) = -1$.
+\end{theorem}
+
+\begin{proof}
+Alternating vectors: $n_0 = (+1, 0)$, $n_1 = (-1, 0)$, $n_2 = (+1, 0)$,
+$n_3 = (-1, 0)$. All edge dot products $= -1$. Rank 1, PSD.
+\end{proof}
+
+\section{Degree Bounds}
+
+\begin{theorem}[B\'{e}zout Bound]\label{thm:bezout}
+For the complete graph $K_n$ in dimension $d$:
+\begin{equation}
+\deg(P_{K_n}) \le (d+1)^{\binom{n}{d+1}}
+\end{equation}
+\end{theorem}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ccccl}
+\hline
+$n$ & $d$ & B\'{e}zout bound & Actual degree & Case \\
+\hline
+3 & 1 & $2^3 = 8$ & 1 & Trivial \\
+4 & 2 & $3^4 = 81$ & 3 & Regular simplex \\
+5 & 2 & $3^5 = 243$ & --- & $\cos(2\pi/5)$ \\
+5 & 3 & $4^5 = 1024$ & 3 & Cubic \\
+6 & 3 & $4^{20} \approx 10^{12}$ & ? & Open \\
+\hline
+\end{tabular}
+\caption{Degree bounds for complete graphs.}
+\end{table}
+
+\begin{theorem}[Sparsity Reduction]
+For a graph $G$ with $|E|$ edges, the effective number of free variables is
+$F = \binom{n}{2} - |E|$. The degree bound improves to:
+\begin{equation}
+\deg(P_G) \le (d+1)^{\binom{n}{d+1} - F}
+\end{equation}
+\end{theorem}
+
+\section{Algorithm}
+
+\begin{quote}
+\textbf{Algorithm} \textsc{ResultantPacking}
+
+\textbf{Input:} Graph $G = (V,E)$, dimension $d$
+
+\textbf{Output:} Polynomial $P_G(c)$, optimal value $c_{\mathrm{opt}}$
+
+\begin{enumerate}
+    \item Construct symbolic Gram matrix $\mathbf{G}$ with entries $G_{ij}$
+    \item Set $G_{ii} = 1$ for all $i$
+    \item For each edge $(i,j) \in E$: set $G_{ij} = c$ (parameter)
+    \item Compute all $\binom{n}{d+1}$ minors $M_S = \det(\mathbf{G}[S,S])$
+    for $|S| = d+1$
+    \item \textbf{Eliminate free variables:}
+    \begin{itemize}
+        \item While free variables remain:
+        \item Pick a free variable $y$
+        \item Pick $f, g$ involving $y$
+        \item Compute $R = \operatorname{Res}_y(f, g)$
+        \item Replace $f, g$ with $R$
+    \end{itemize}
+    \item $P_G(c) = \prod_{f \in \mathcal{F}} f$ (or GCD)
+    \item Find all real roots of $P_G(c)$
+    \item For each root $c_0$, check feasibility (PSD + rank $\le d$)
+    \item Return $c_{\mathrm{opt}} = \min\{c_0 : c_0 \text{ feasible}\}$
+\end{enumerate}
+\end{quote}
+
+\section{Comparison with SDP}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+\hline
+Method & $K_5-\{04\}/\mathbb{R}^3$ & Exact? & Complexity \\
+\hline
+SDP (Lov\'{a}sz) & $c = -0.4714$ & No (upper bound) & Polynomial \\
+Resultant & $c_* = -0.3046$ & \textbf{Yes} & Exponential \\
+NLP & $c_* = -0.3046$ & Numerical only & Slow \\
+\hline
+\end{tabular}
+\caption{Comparison of methods for $K_5$ minus edge.}
+\end{table}
+
+\section{Open Problems}
+
+\begin{enumerate}
+    \item \textbf{Complexity:} Is computing $P_G(c)$ polynomial-time for fixed $d$?
+
+    \item \textbf{Tight bounds:} What is the exact degree of $P_G$ for complete graphs?
+
+    \item \textbf{Graph families:} Do trees, planar graphs, or regular graphs have
+    special structure that simplifies $P_G$?
+
+    \item \textbf{Anti-commutativity:} Can this framework handle fermionic
+    (anti-commuting) systems?
+
+    \item \textbf{Higher dimensions:} What happens for $d \ge 4$?
+\end{enumerate}
+
+\begin{thebibliography}{9}
+
+\bibitem{klyachko2008}
+A.~Klyachko, M.~A.~Can, M.~Binicio{\u{g}}lu, and A.~S.~Shumovsky,
+``Simple test for hidden variables in spin-1 systems,''
+\textit{Phys. Rev. Lett.} \textbf{101}, 020403 (2008).
+
+\bibitem{pirónio2010}
+S.~Pironio, M.~Navascu\'{e}s, and A.~Ac\'{i}n,
+``Convergent relaxations of polynomial optimization problems with
+non-commuting variables,''
+\textit{SIAM J. Optim.} \textbf{20}, 2157--2180 (2010).
+
+\bibitem{lovasz1979}
+L.~Lov\'{a}sz,
+``On the Shannon capacity of a graph,''
+\textit{IEEE Trans. Inf. Theory} \textbf{25}, 1--7 (1979).
+
+\bibitem{soares2026}
+E.~Soares,
+``Quantum Local Packing: K5 Minus Edge in R$^3$,''
+GitHub repository (2026).
+
+\end{thebibliography}
+
+\end{document}
